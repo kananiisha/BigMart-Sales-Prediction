@@ -2,15 +2,12 @@
 
 A Flask-based web application that predicts retail sales using a **Gradient Boosting** machine learning model — with user authentication, prediction history, and an analytics dashboard.
 
-## 🌐 Live Demo
-👉 [Add your deployed link here]
-
 ---
 
 ## 📸 Screenshots
 
 ![Dashboard](screenshots/dashboard.jpeg)
-![Prediction Form](screenshots/predict.jpeg)
+![Prediction Form](screenshots/predic.jpeg)
 ![Results](screenshots/result.jpeg)
 
 ---
