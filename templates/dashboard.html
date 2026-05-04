@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — BigMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.green::before { background: var(--accent); }
+  .stat-card.blue::before  { background: var(--accent2); }
+  .stat-card.orange::before{ background: var(--warning); }
+  .stat-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text); }
+  .stat-label { color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 0.2rem; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .empty-state p { margin-bottom: 1rem; }
+  @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>Welcome back, <strong>{{ session.user_name }}</strong> 👋</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card green">
+    <div class="stat-icon">📊</div>
+    <div class="stat-value">{{ total_predictions }}</div>
+    <div class="stat-label">Total Predictions</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-icon">📦</div>
+    <div class="stat-value">{{ avg_sales }}</div>
+    <div class="stat-label">Avg Units Sold</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="stat-icon">🤖</div>
+    <div class="stat-value">GB</div>
+    <div class="stat-label">Gradient Boosting Model</div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div style="display:flex; gap:1rem; margin-bottom:2rem;">
+  <a href="{{ url_for('predict') }}" class="btn btn-primary">➕ New Prediction</a>
+  <a href="{{ url_for('history') }}" class="btn btn-secondary">📋 View All History</a>
+</div>
+
+<!-- Recent Predictions -->
+<div class="card">
+  <div class="section-header">
+    <h2>Recent Predictions</h2>
+    <a href="{{ url_for('history') }}" style="color:var(--accent); font-size:0.85rem; text-decoration:none;">View all →</a>
+  </div>
+
+  {% if last_5_predictions %}
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>MRP (₹)</th>
+        <th>Discount %</th>
+        <th>Predicted Units</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in last_5_predictions %}
+      <tr>
+        <td><span class="badge badge-blue">{{ p.item_category }}</span></td>
+        <td>₹{{ p.item_mrp }}</td>
+        <td>{{ p.discount_percentage }}%</td>
+        <td><strong style="color:var(--accent);">{{ p.predicted_units_sold }}</strong></td>
+        <td style="color:var(--muted); font-size:0.82rem;">{{ p.timestamp.strftime('%d %b %Y') }}</td>
+        <td><a href="{{ url_for('result', pred_id=p.id) }}" style="color:var(--accent2); font-size:0.82rem; text-decoration:none;">View →</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">🔮</div>
+    <p>No predictions yet. Make your first one!</p>
+    <a href="{{ url_for('predict') }}" class="btn btn-primary">Make Prediction</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

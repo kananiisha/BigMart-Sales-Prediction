@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+pandas
+scikit-learn
+joblib
+numpy
+werkzeug
+python-dotenv

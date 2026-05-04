@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Result — BigMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  .result-hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .result-label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+  .result-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .result-unit { color: var(--muted); font-size: 1rem; }
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .detail-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .detail-title { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { color: var(--muted); font-size: 0.85rem; }
+  .detail-val { color: var(--text); font-size: 0.9rem; font-weight: 500; }
+  .actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+  @media (max-width: 640px) { .details-grid { grid-template-columns: 1fr; } .result-value { font-size: 3rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Prediction Result</h1>
+  <p>Here's what our model predicted for your input.</p>
+</div>
+
+<!-- Hero Result -->
+<div class="result-hero">
+  <div class="result-label">Predicted Units Sold</div>
+  <div class="result-value">{{ prediction.predicted_units_sold }}</div>
+  <div class="result-unit">units estimated to be sold</div>
+  <div style="margin-top:1rem; color:var(--muted); font-size:0.8rem;">
+    🤖 Gradient Boosting Regressor &nbsp;|&nbsp; {{ prediction.timestamp.strftime('%d %b %Y, %I:%M %p') }}
+  </div>
+</div>
+
+<!-- Details -->
+<div class="details-grid">
+  <div class="detail-card">
+    <div class="detail-title">📦 Item Details</div>
+    <div class="detail-row">
+      <span class="detail-key">Category</span>
+      <span class="detail-val">{{ prediction.item_category }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">MRP</span>
+      <span class="detail-val">₹{{ prediction.item_mrp }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Visibility</span>
+      <span class="detail-val">{{ prediction.item_visibility }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Fat Content</span>
+      <span class="detail-val">{{ prediction.item_fat_content }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Discount</span>
+      <span class="detail-val">{{ prediction.discount_percentage }}%</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Festival Season</span>
+      <span class="detail-val">{% if prediction.festival_flag == '1' %}🎉 Yes{% else %}No{% endif %}</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-title">🏪 Outlet Details</div>
+    <div class="detail-row">
+      <span class="detail-key">Outlet Type</span>
+      <span class="detail-val">{{ prediction.outlet_type }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Outlet Size</span>
+      <span class="detail-val">{{ prediction.outlet_size or 'N/A' }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Location Type</span>
+      <span class="detail-val">{{ prediction.outlet_location_type }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Established</span>
+      <span class="detail-val">{{ prediction.outlet_establishment_year }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="actions">
+  <a href="{{ url_for('predict') }}" class="btn btn-primary">🔮 New Prediction</a>
+  <a href="{{ url_for('history') }}" class="btn btn-secondary">📋 View History</a>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">🏠 Dashboard</a>
+</div>
+{% endblock %}

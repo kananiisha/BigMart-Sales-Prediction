@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}History — BigMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .count-badge {
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.2);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 0.2rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--muted); }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+  .festival-yes { color: var(--accent); font-weight: 600; }
+  .festival-no  { color: var(--muted); }
+  .pred-units   { color: var(--accent); font-weight: 700; font-family: 'Syne', sans-serif; font-size: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Prediction History</h1>
+  <p>All your past predictions in one place.</p>
+</div>
+
+<div class="history-header">
+  <span class="count-badge">{{ predictions|length }} predictions</span>
+  <a href="{{ url_for('predict') }}" class="btn btn-primary">➕ New Prediction</a>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+  {% if predictions %}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Category</th>
+        <th>MRP (₹)</th>
+        <th>Discount</th>
+        <th>Outlet Type</th>
+        <th>Location</th>
+        <th>Festival</th>
+        <th>Predicted Units</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in predictions %}
+      <tr>
+        <td style="color:var(--muted); font-size:0.8rem;">{{ loop.index }}</td>
+        <td><span class="badge badge-blue">{{ p.item_category }}</span></td>
+        <td>₹{{ p.item_mrp }}</td>
+        <td>{{ p.discount_percentage }}%</td>
+        <td style="font-size:0.85rem;">{{ p.outlet_type }}</td>
+        <td><span class="badge badge-green">{{ p.outlet_location_type }}</span></td>
+        <td>
+          {% if p.festival_flag == '1' %}
+            <span class="festival-yes">🎉 Yes</span>
+          {% else %}
+            <span class="festival-no">No</span>
+          {% endif %}
+        </td>
+        <td><span class="pred-units">{{ p.predicted_units_sold }}</span></td>
+        <td style="color:var(--muted); font-size:0.8rem; white-space:nowrap;">{{ p.timestamp.strftime('%d %b %Y') }}</td>
+        <td>
+          <a href="{{ url_for('result', pred_id=p.id) }}"
+             style="color:var(--accent2); font-size:0.82rem; text-decoration:none;">
+            View →
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📭</div>
+    <p>No predictions yet!</p>
+    <a href="{{ url_for('predict') }}" class="btn btn-primary">Make Your First Prediction</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
